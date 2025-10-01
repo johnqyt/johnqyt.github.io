@@ -10,35 +10,42 @@ redirect_from:
 {% include base_path %}
 
 ## Education
+**Yale University** — Ph.D. in Physics  
+*Aug 2025 – present*  
+
 **ShanghaiTech University** — B.S. in Physics  
-*Sep 2021 – Jul 2025*. GPA: 3.67/4.00 (Rank 8/35).  
-Core: Theoretical Mechanics (A+), Electrodynamics (A+), Mathematical Physics (A)
+*Sep 2021 – Jul 2025*  
+Thesis: *Correlated Electronic States and Superconductivity in Kagome Lattices*  
+Advisor: Prof. Gang Li  
 
 **University of California, Berkeley** — BPIE Program  
-*Jan 2024 – Dec 2024*. GPA: 4.00/4.00.  
-Core: Solid State Physics (A), Quantum Mechanics (A), Computational Techniques in Physics (A+)
+*Jan 2024 – Dec 2024*  
+
 ---
 
 ## Research Experience
+**Correlated Electronic States and Superconductivity in Kagome Lattices**, ShanghaiTech University — *Jan 2025 – Jun 2025*  
+Mentor: Prof. Gang Li  
+– Constructed a six-orbital tight-binding model for AV₃Sb₅ kagome metals
+– Implemented multi-orbital FLEX calculations accelerated with intermediate-representation (IR) basis to map spin/charge fluctuations  
+– Identified competing superconducting instabilities, suggesting possible time-reversal symmetry breaking
+
 **Graphene Break-Junction Device Fabrication**, UC Berkeley — *Jan 2024 – Dec 2024*  
 Mentor: Prof. Michael F. Crommie  
 – Exfoliated monolayer graphene onto hBN via dry transfer  
 – AFM-etched channels for break-junctions; shadow-mask Au electrodes  
-– Programmed PPMS electrical-burning to induce break-junctions
+– Programmed PPMS electrical-burning to induce break-junctions  
 
-**2D Metal–Organic Frameworks (MOF)**, UC Berkeley — *Jan 2024 – Dec 2024*  
+**Synthesis and Characterization of 2D Metal–Organic Framework**, UC Berkeley — *Jan 2024 – Dec 2024*  
 Mentor: Prof. Michael F. Crommie  
-– Chemical vapor epitaxy of Ni-based 2D MOF (NiBr₂ + HATP) on Au(111), HOPG, WSe₂  
-– Graphene / WSe₂ device fabrication via hBN sliding  
-– STM/STS characterization of honeycomb-Kagome electronic structure
+– Conducted chemical vapor epitaxy of 2D MOF using NiBr₂ and HATP on Au(111), HOPG, and WSe₂  
+– Fabricated graphene and WSe₂ devices using hBN sliding techniques  
+– Characterized Honeycomb-Kagome electronic structure of 2D MOF with STM and STS  
 
-**Entanglement Entropy & Quantum Spin Liquids**, ShanghaiTech — *Sep 2022 – Sep 2023*  
-Mentor: Prof. Gang Li  
-– Studied Landau SSB, Kitaev model; calculated long-range entanglement entropy
-
-**Drop Explosion on Hydrophobic Surfaces**, ShanghaiTech — *Sep 2021 – Oct 2022*  
-Mentor: Prof. Runze Li  
-– Investigated fragmentation; analyzed via Marangoni + Rayleigh–Taylor instabilities
+**Drop Explosion of Water–Alcohol Mixture on Hydrophobic Surfaces**, ShanghaiTech University — *Sep 2021 – Oct 2022*  
+Mentor: Prof. Runze Li, Prof. Yifan Jiang
+– Investigated the fragmentation process of droplets upon contact with hydrophobic surfaces, studying parameters affecting droplet size distribution  
+– Analyzed the explosion process using the Marangoni effect and Rayleigh–Taylor instability to deduce the physical principles underlying the phenomena  
 
 ---
 
@@ -52,3 +59,13 @@ Mentor: Prof. Runze Li
 ## Skills
 **Programming:** Fortran, Python, MATLAB, Mathematica, LabVIEW, Linux  
 **Languages:** English, Chinese
+
+## Honors & Awards
+- **Shanghai Outstanding Graduate** — *Jun 2025*  
+- **ShanghaiTech University Outstanding Graduate** — *Jun 2025*  
+- **Merit Student of ShanghaiTech University** (Top 15% of students) — *Dec 2024*  
+- **ShanghaiTech University Future Materials Innovation Class Scholarship** — *Mar 2024*  
+- **Merit Student of ShanghaiTech University** (Top 7% of students) — *Dec 2023*  
+- **Merit Student of ShanghaiTech University** (Top 15% of students) — *Dec 2022*  
+- **First Prize in the 13th China Undergraduate Physics Tournament** — *Oct 2022*  
+
