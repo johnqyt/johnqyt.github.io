@@ -1,11 +1,4 @@
 # Welcome to Jekyll!
-## Stage all new and changed files
-# git add .
-# Commit the new note
-# git commit -m "Add new note on quantum entanglement"
-# Push to GitHub
-# git push
-# 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
 # This config file is meant for settings that affect your entire site, values
 # which you are expected to set up once and rarely need to edit after that.
 # For technical reasons, this file is *NOT* reloaded automatically when you use
