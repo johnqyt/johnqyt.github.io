@@ -60,6 +60,8 @@ Mentor: Prof. Runze Li, Prof. Yifan Jiang
 **Programming:** Fortran, Python, MATLAB, Mathematica, LabVIEW, Linux  
 **Languages:** English, Chinese
 
+---
+
 ## Honors & Awards
 - **Shanghai Outstanding Graduate** — *Jun 2025*  
 - **ShanghaiTech University Outstanding Graduate** — *Jun 2025*  
