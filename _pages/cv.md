@@ -43,7 +43,7 @@ Mentor: Prof. Michael F. Crommie
 – Characterized Honeycomb-Kagome electronic structure of 2D MOF with STM and STS  
 
 **Drop Explosion of Water–Alcohol Mixture on Hydrophobic Surfaces**, ShanghaiTech University — *Sep 2021 – Oct 2022*  
-Mentor: Prof. Runze Li, Prof. Yifan Jiang
+Mentor: Prof. Runze Li, Prof. Yifan Jiang  
 – Investigated the fragmentation process of droplets upon contact with hydrophobic surfaces, studying parameters affecting droplet size distribution  
 – Analyzed the explosion process using the Marangoni effect and Rayleigh–Taylor instability to deduce the physical principles underlying the phenomena  
 
