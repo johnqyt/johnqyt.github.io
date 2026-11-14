@@ -340,6 +340,8 @@ h3 { margin: 0; font: 600 1.1rem/1.35 var(--serif); transition: color 0.2s ease;
 
 /* ---------- figures ---------- */
 .has-fig { display: grid; grid-template-columns: 176px minmax(0, 1fr); gap: 22px; align-items: start; }
+.figs { display: grid; gap: 10px; margin-top: 4px; }
+.figs .fig { margin-top: 0; }
 .fig { display: block; margin-top: 4px; overflow: hidden; border-radius: 8px; border: 1px solid var(--rule); }
 .fig img {
   display: block;

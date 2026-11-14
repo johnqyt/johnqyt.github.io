@@ -1,5 +1,5 @@
 /* Yutang Qiao — site interactions
-   1. Graphene-lattice background that reacts to the cursor
+   1. XY-model spin background with vortex pairs that reacts to the cursor
    2. Theme toggle, scroll reveal, section highlight, card spotlight */
 
 (() => {
@@ -28,20 +28,24 @@
     lattice.redraw();
   });
 
-  /* ---------------- graphene lattice background ---------------- */
+  /* ---------------- XY-model background: planar spins with vortex pairs ----------------
+     Each mark is a planar spin. Its angle is a slow spin wave plus the winding of a few
+     vortex-antivortex pairs, the excitations behind the Berezinskii-Kosterlitz-Thouless
+     transition. Moving the cursor pulls a new pair apart; when it rests, the pair
+     recombines. */
   const lattice = (() => {
     const canvas = document.getElementById('lattice');
     if (!canvas) return { readColors() {}, redraw() {} };
     const ctx = canvas.getContext('2d');
 
-    const A = 30;                      // carbon-carbon bond length (px)
-    const ROW = A * 1.5;               // row height of the honeycomb
-    const COL = A * Math.sqrt(3);      // column width
-    const R = 190;                     // cursor influence radius
-    let W = 0, H = 0, sites = [], bonds = [], adj = [], electrons = [];
-    let col = { base: '0,53,107', glow: '0,90,190', hop: '214,138,30' };
-    const mouse = { x: -9999, y: -9999, on: false };
-    let last = 0, running = false;
+    const S = 34;      // lattice spacing (px)
+    const L = 12;      // spin length
+    const R = 170;     // cursor highlight radius
+    let W = 0, H = 0, cols = 0, rows = 0, pairs = [];
+    let col = { base: '0,53,107', glow: '0,90,190', hop: '0,90,190' };
+    const mouse = { x: 0, y: 0, on: false };
+    const probe = { x: 0, y: 0, ax: 0, ay: 0, ready: false };   // cursor vortex and its antivortex
+    let running = false, now = 0;
 
     function readColors() {
       const s = getComputedStyle(root);
@@ -57,139 +61,113 @@
       W = window.innerWidth; H = window.innerHeight;
       canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      cols = Math.ceil(W / S) + 2; rows = Math.ceil(H / S) + 3;
 
-      const cols = Math.ceil(W / COL) + 4;
-      const rows = Math.ceil(H / ROW) + 8;
-      const id = (i, j, b) => (i < 0 || j < 0 || i >= cols || j >= rows) ? -1 : (j * cols + i) * 2 + b;
-
-      // honeycomb: two atoms per cell, A at the cell origin and B one bond below it
-      sites = new Array(cols * rows * 2);
-      for (let j = 0; j < rows; j++) {
-        for (let i = 0; i < cols; i++) {
-          const x = (i - 2 + (j & 1) / 2) * COL, y = (j - 3) * ROW;
-          sites[id(i, j, 0)] = { x, y, px: 0, py: 0, g: 0 };
-          sites[id(i, j, 1)] = { x, y: y + A, px: 0, py: 0, g: 0 };
-        }
+      const n = W * H > 900000 ? 3 : 2;
+      const rnd = Math.random;
+      pairs = [];
+      for (let k = 0; k < n; k++) {
+        pairs.push({
+          cx: W * (0.2 + 0.6 * rnd()), cy: H * (0.2 + 0.6 * rnd()),
+          ax: W * 0.16, ay: H * 0.15,
+          fx: 0.00003 + rnd() * 0.00003, fy: 0.00003 + rnd() * 0.00003,
+          px: rnd() * 6.2832, py: rnd() * 6.2832,
+          d: 80 + rnd() * 70, phase: rnd() * 6.2832,
+          spin: (rnd() < 0.5 ? -1 : 1) * (0.00010 + rnd() * 0.00010),
+        });
       }
-
-      bonds = []; adj = sites.map(() => []);
-      const link = (p, q) => { if (p < 0 || q < 0) return; bonds.push([p, q]); adj[p].push(q); adj[q].push(p); };
-      for (let j = 0; j < rows; j++) {
-        for (let i = 0; i < cols; i++) {
-          const b = id(i, j, 1), odd = j & 1;
-          link(id(i, j, 0), b);                               // vertical bond
-          link(b, id(odd ? i + 1 : i, j + 1, 0));             // down-right
-          link(b, id(odd ? i : i - 1, j + 1, 0));             // down-left
-        }
-      }
-
-      const n = reduceMotion ? 0 : Math.max(3, Math.min(6, Math.round((W * H) / 300000)));
-      electrons = [];
-      for (let k = 0; k < n; k++) electrons.push(spawn());
     }
 
-    function spawn() {
-      let from = Math.floor(Math.random() * sites.length);
-      for (let t = 0; t < 20 && !adj[from].length; t++) from = Math.floor(Math.random() * sites.length);
-      const to = adj[from][Math.floor(Math.random() * adj[from].length)] ?? from;
-      return { from, to, prev: -1, p: Math.random(), v: 0.0005 + Math.random() * 0.0005 };
+    function vortices(t) {
+      const list = [];
+      for (const p of pairs) {
+        const cx = p.cx + p.ax * Math.sin(t * p.fx + p.px);
+        const cy = p.cy + p.ay * Math.sin(t * p.fy + p.py);
+        const a = p.phase + t * p.spin;
+        const dx = Math.cos(a) * p.d / 2, dy = Math.sin(a) * p.d / 2;
+        list.push({ x: cx + dx, y: cy + dy, q: 1, s: 1 }, { x: cx - dx, y: cy - dy, q: -1, s: 1 });
+      }
+      if (probe.ready) {
+        const sep = Math.hypot(probe.x - probe.ax, probe.y - probe.ay);
+        const s = Math.min(1, sep / 50);
+        if (s > 0.04) {
+          list.push({ x: probe.x, y: probe.y, q: 1, s }, { x: probe.ax, y: probe.ay, q: -1, s });
+        }
+      }
+      return list;
     }
 
     function draw(t) {
       ctx.clearRect(0, 0, W, H);
-      const oy = -((window.scrollY * 0.12) % (2 * ROW));
-      const mx = mouse.x, my = mouse.y, R2 = R * R;
+      const oy = -((window.scrollY * 0.1) % S);
+      const vs = vortices(t);
+      const near = [];
+      const heads = [];
+      const R2 = R * R;
 
-      // positions + cursor response
-      for (let k = 0; k < sites.length; k++) {
-        const s = sites[k];
-        let x = s.x, y = s.y + oy, target = 0, ux = 0, uy = 0;
-        if (mouse.on) {
-          const dx = x - mx, dy = y - my, d2 = dx * dx + dy * dy;
-          if (d2 < R2) {
-            const d = Math.sqrt(d2) || 1, f = 1 - d / R;
-            target = f * f; ux = dx / d; uy = dy / d;
+      ctx.lineCap = 'round';
+      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = `rgba(${col.base},0.2)`;
+      ctx.beginPath();
+      for (let j = 0; j < rows; j++) {
+        const y = (j - 1) * S + oy + S / 2;
+        for (let i = 0; i < cols; i++) {
+          const x = (i - 0.5) * S;
+          // spin wave
+          let th = 0.34 * Math.sin(x * 0.0052 + y * 0.0037 - t * 0.0004)
+                 + 0.20 * Math.sin(x * 0.0031 - y * 0.0058 + t * 0.00027);
+          // winding from every vortex
+          for (let k = 0; k < vs.length; k++) th += vs[k].q * Math.atan2(y - vs[k].y, x - vs[k].x);
+          const c = Math.cos(th) * L / 2, s = Math.sin(th) * L / 2;
+          ctx.moveTo(x - c, y - s); ctx.lineTo(x + c, y + s);
+          heads.push(x + c, y + s);
+          if (mouse.on) {
+            const dx = x - mouse.x, dy = y - mouse.y, d2 = dx * dx + dy * dy;
+            if (d2 < R2) { const f = 1 - Math.sqrt(d2) / R; near.push(x, y, c, s, f * f); }
           }
         }
-        s.g += (target - s.g) * 0.14;
-        if (s.g < 0.002) s.g = 0;
-        s.px = x + ux * s.g * 10; s.py = y + uy * s.g * 10;
-      }
-
-      // base bonds
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = `rgba(${col.base},0.13)`;
-      ctx.beginPath();
-      for (let k = 0; k < bonds.length; k++) {
-        const a = sites[bonds[k][0]], b = sites[bonds[k][1]];
-        ctx.moveTo(a.px, a.py); ctx.lineTo(b.px, b.py);
       }
       ctx.stroke();
 
-      // highlighted bonds near the cursor
-      for (let k = 0; k < bonds.length; k++) {
-        const a = sites[bonds[k][0]], b = sites[bonds[k][1]];
-        const g = Math.min(a.g, b.g);
-        if (g > 0.01) {
-          ctx.strokeStyle = `rgba(${col.glow},${(g * 0.75).toFixed(3)})`;
-          ctx.lineWidth = 1 + g * 0.8;
-          ctx.beginPath(); ctx.moveTo(a.px, a.py); ctx.lineTo(b.px, b.py); ctx.stroke();
-        }
-      }
-
-      // base sites, with a slow travelling wave
-      ctx.fillStyle = `rgba(${col.base},0.26)`;
+      // arrow heads: a dot at the tip of each spin
+      ctx.fillStyle = `rgba(${col.base},0.36)`;
       ctx.beginPath();
-      for (let k = 0; k < sites.length; k++) {
-        const s = sites[k];
-        ctx.moveTo(s.px + 1.4, s.py); ctx.arc(s.px, s.py, 1.4, 0, 6.2832);
+      for (let k = 0; k < heads.length; k += 2) {
+        ctx.moveTo(heads[k] + 1.6, heads[k + 1]); ctx.arc(heads[k], heads[k + 1], 1.6, 0, 6.2832);
       }
       ctx.fill();
 
-      ctx.fillStyle = `rgba(${col.base},0.2)`;
-      ctx.beginPath();
-      for (let k = 0; k < sites.length; k++) {
-        const s = sites[k];
-        const w = Math.sin(s.x * 0.007 + s.y * 0.005 - t * 0.0005);
-        if (w > 0.72) { ctx.moveTo(s.px + 2, s.py); ctx.arc(s.px, s.py, 2, 0, 6.2832); }
+      // spins near the cursor light up
+      for (let k = 0; k < near.length; k += 5) {
+        const x = near[k], y = near[k + 1], c = near[k + 2], s = near[k + 3], f = near[k + 4];
+        ctx.strokeStyle = `rgba(${col.glow},${(f * 0.85).toFixed(3)})`;
+        ctx.lineWidth = 1.2 + f;
+        ctx.beginPath(); ctx.moveTo(x - c, y - s); ctx.lineTo(x + c, y + s); ctx.stroke();
+        ctx.fillStyle = `rgba(${col.glow},${(f * 0.95).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(x + c, y + s, 1.6 + f, 0, 6.2832); ctx.fill();
       }
-      ctx.fill();
 
-      // glowing sites near the cursor
-      for (let k = 0; k < sites.length; k++) {
-        const s = sites[k];
-        if (s.g > 0.01) {
-          ctx.fillStyle = `rgba(${col.glow},${Math.min(1, 0.25 + s.g * 0.9).toFixed(3)})`;
-          ctx.beginPath(); ctx.arc(s.px, s.py, 1.6 + s.g * 2.2, 0, 6.2832); ctx.fill();
+      // vortex cores: filled for +1, hollow for -1
+      ctx.lineWidth = 1.2;
+      for (const v of vs) {
+        ctx.strokeStyle = `rgba(${col.glow},${(0.5 * v.s).toFixed(3)})`;
+        ctx.beginPath(); ctx.arc(v.x, v.y, 8, 0, 6.2832); ctx.stroke();
+        if (v.q > 0) {
+          ctx.fillStyle = `rgba(${col.glow},${(0.6 * v.s).toFixed(3)})`;
+          ctx.beginPath(); ctx.arc(v.x, v.y, 2.6, 0, 6.2832); ctx.fill();
         }
-      }
-
-      // hopping particles
-      for (let k = 0; k < electrons.length; k++) {
-        const e = electrons[k], a = sites[e.from], b = sites[e.to];
-        const p = e.p < 0.5 ? 2 * e.p * e.p : 1 - Math.pow(-2 * e.p + 2, 2) / 2; // ease in-out
-        const x = a.px + (b.px - a.px) * p, y = a.py + (b.py - a.py) * p;
-        ctx.fillStyle = `rgba(${col.hop},0.10)`;
-        ctx.beginPath(); ctx.arc(x, y, 6, 0, 6.2832); ctx.fill();
-        ctx.fillStyle = `rgba(${col.hop},0.55)`;
-        ctx.beginPath(); ctx.arc(x, y, 1.9, 0, 6.2832); ctx.fill();
       }
     }
 
     function step(t) {
       if (!running) return;
-      const dt = Math.min(50, t - last || 16); last = t;
-      for (let k = 0; k < electrons.length; k++) {
-        const e = electrons[k];
-        e.p += dt * e.v;
-        if (e.p >= 1) {
-          const options = adj[e.to];
-          let next = options[Math.floor(Math.random() * options.length)];
-          if (next === e.from && options.length > 1) next = options[Math.floor(Math.random() * options.length)];
-          e.prev = e.from; e.from = e.to; e.to = next ?? e.from; e.p = 0;
-          const s = sites[e.from];
-          if (s.x < -80 || s.x > W + 80 || s.y < -160 || s.y > H + 160) electrons[k] = spawn();
-        }
+      now = t;
+      if (mouse.on) {
+        if (!probe.ready) { probe.x = probe.ax = mouse.x; probe.y = probe.ay = mouse.y; probe.ready = true; }
+        probe.x += (mouse.x - probe.x) * 0.2; probe.y += (mouse.y - probe.y) * 0.2;
+        probe.ax += (probe.x - probe.ax) * 0.022; probe.ay += (probe.y - probe.ay) * 0.022;
+      } else if (probe.ready) {
+        probe.x += (probe.ax - probe.x) * 0.06; probe.y += (probe.ay - probe.y) * 0.06;
       }
       draw(t);
       requestAnimationFrame(step);
@@ -197,10 +175,10 @@
 
     function start() {
       if (reduceMotion || running || document.hidden) return;
-      running = true; last = 0; requestAnimationFrame(step);
+      running = true; requestAnimationFrame(step);
     }
     function stop() { running = false; }
-    function redraw() { if (!running) draw(performance.now()); }
+    function redraw() { if (!running) draw(now); }
 
     readColors(); build(); draw(0); start();
 
@@ -264,4 +242,23 @@
       card.style.setProperty('--my', `${e.clientY - r.top}px`);
     });
   });
+
+  /* ---------------- email button: also copy the address ---------------- */
+  const email = document.querySelector('a.email');
+  if (email) {
+    const label = email.querySelector('span');
+    const original = label.textContent;
+    let timer;
+    email.addEventListener('click', () => {
+      const address = email.dataset.email;
+      const done = () => {
+        label.textContent = 'Address copied';
+        clearTimeout(timer);
+        timer = setTimeout(() => { label.textContent = original; }, 1800);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(address).then(done).catch(() => {});
+      }
+    });
+  }
 })();
