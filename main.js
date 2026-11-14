@@ -1,6 +1,6 @@
 /* Yutang Qiao — site interactions
    1. Graphene-lattice background that reacts to the cursor
-   2. Theme toggle, scroll reveal, section highlight, card spotlight, figure lightbox */
+   2. Theme toggle, scroll reveal, section highlight, card spotlight */
 
 (() => {
   const root = document.documentElement;
@@ -264,22 +264,4 @@
       card.style.setProperty('--my', `${e.clientY - r.top}px`);
     });
   });
-
-  /* ---------------- figure lightbox ---------------- */
-  const box = document.querySelector('.lightbox');
-  if (box) {
-    const img = box.querySelector('img');
-    const close = () => { box.classList.remove('open'); document.body.style.overflow = ''; };
-    document.querySelectorAll('a.fig').forEach((a) => {
-      a.addEventListener('click', (e) => {
-        e.preventDefault();
-        img.src = a.getAttribute('href');
-        img.alt = a.querySelector('img')?.alt || '';
-        box.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-    box.addEventListener('click', close);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  }
 })();
