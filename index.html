@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap">
   <link rel="stylesheet" href="style.css">
-  <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}</script>
+  <script>try{var t=localStorage.getItem('theme');document.documentElement.dataset.theme=(t==='light')?'light':'dark';}catch(e){}</script>
 </head>
 <body>
   <canvas id="lattice" aria-hidden="true"></canvas>
@@ -113,10 +113,10 @@
       </article>
 
       <article class="project card has-fig">
-        <div class="figs">
-          <div class="fig"><img src="assets/mof-growth.png" alt="Structure, band structure and growth schematic of the Ni3(HITP)2 kagome framework, Fig. 1 of arXiv:2610.18539" loading="lazy"></div>
-          <div class="fig"><img src="assets/mof-stm.png" alt="STM topographs of single-layer Ni3(HITP)2 on HOPG and WSe2, Fig. 2 of arXiv:2610.18539" loading="lazy"></div>
-        </div>
+        <div class="figs"><div class="figs-inner">
+          <div class="fig" style="flex-grow:0.3"><img src="assets/mof-growth.png" alt="Structure, band structure and growth schematic of the Ni3(HITP)2 kagome framework, Fig. 1 of arXiv:2610.18539" loading="lazy"></div>
+          <div class="fig" style="flex-grow:1.0"><img src="assets/mof-stm.png" alt="STM topographs of single-layer Ni3(HITP)2 on HOPG and WSe2, Fig. 2 of arXiv:2610.18539" loading="lazy"></div>
+        </div></div>
         <div>
           <div class="project-head">
             <h3>Gate-tunable single-layer kagome metal&ndash;organic frameworks</h3>
@@ -134,10 +134,10 @@
       </article>
 
       <article class="project card has-fig">
-        <div class="figs">
-          <div class="fig"><img src="assets/bj-device.png" alt="Schematic of a gated graphene break-junction device under an STM tip" loading="lazy"></div>
-          <div class="fig"><img src="assets/bj-ribbon.png" alt="A graphene nanoribbon bridging the gap between two graphene electrodes" loading="lazy"></div>
-        </div>
+        <div class="figs"><div class="figs-inner">
+          <div class="fig" style="flex-grow:0.57"><img src="assets/bj-device.png" alt="Schematic of a gated graphene break-junction device under an STM tip" loading="lazy"></div>
+          <div class="fig" style="flex-grow:0.73"><img src="assets/bj-ribbon.png" alt="A graphene nanoribbon bridging the gap between two graphene electrodes" loading="lazy"></div>
+        </div></div>
         <div>
           <div class="project-head">
             <h3>Graphene break-junction devices</h3>
@@ -153,10 +153,10 @@
       </article>
 
       <article class="project card has-fig">
-        <div class="figs">
-          <div class="fig"><img src="assets/kagome-bands.png" alt="Band structure of the fitted kagome tight-binding model" loading="lazy"></div>
-          <div class="fig"><img src="assets/kagome-susceptibility.png" alt="Spin, charge and bare susceptibilities of the kagome model along the high-symmetry path" loading="lazy"></div>
-        </div>
+        <div class="figs"><div class="figs-inner">
+          <div class="fig" style="flex-grow:0.7"><img src="assets/kagome-bands.png" alt="Band structure of the fitted kagome tight-binding model" loading="lazy"></div>
+          <div class="fig" style="flex-grow:0.78"><img src="assets/kagome-susceptibility.png" alt="Spin, charge and bare susceptibilities of the kagome model along the high-symmetry path" loading="lazy"></div>
+        </div></div>
         <div>
           <div class="project-head">
             <h3>Correlated electronic states in kagome metals</h3>
